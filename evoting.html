@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>VOTING SYSTEM</title>
+  </head>
+  <body>
+    Add Candidate: <input type="text" name="add__candidate" value="" id="ac">
+    <input type="button" name="Set_Candidate" value="Set the Candidate" id="set_candidate"><br><br>
+    Cast Vote : <input type="text" name="cast__vote" value="" id="cv">
+    <input type="button" name="Set_Vote" value="VOTE" id="set_vote"><br><br>
+     Authorize:<input type="text" name="set__address" values="" id="aa">
+    <input type="button" name="Set_address" value="Authorize" id="set_address"><br><br><br><br><br>
+    <input type="button" name="Show_Votes" value="Show Votes" id="show_votes"><br><br>
+    Votes:<p id="show_votes_ans"></p>
+    <input type="button" name="Show_Candidate" value="Show Candidate" id="show_candidate"><br><br>
+    Candidates:<p id="show_candidate_ans"></p>
+    <input type="button" name="Show_Owner" value="Show Owner" id="show_owner"><br><br>
+    Owner:<p id="show_owner_ans"></p>
+    <input type="button" name="Show_total_votes" value="Show Total Votes" id="Show_total_votes"><br><br>
+     Total Votes:<p id="total_votes_ans"></p>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.22/dist/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" charset="utf-8"></script>
+<script>
+    $(document).ready(function(){
+      window.ethereum.enable();
+      web3=new Web3(web3.currentProvider);
+      var addr="0x615F6183bA8651e99753aA93550aE42D3d28813A";
+      var abi=[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			}
+		],
+		"name": "addCandidate",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_person",
+				"type": "address"
+			}
+		],
+		"name": "authorize",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_voteIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "vote",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getNumCandidate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "TotalVotes",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "voters",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "authorized",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "voted",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "vote",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+      contract = new web3.eth.Contract(abi,addr);
+            });
+
+        //clicking set value for the numbers
+
+         $("#set_candidate").click(function(){
+          var name;
+          name = $("#ac").val();
+          web3.eth.getAccounts().then(function(accounts){
+            var acc=accounts[0];
+            return contract.methods.addCandidate(name).send({from:acc});
+          }).then(function(tx){
+            console.log(tx);
+          });
+        });
+
+        $("#set_vote").click(function(){
+         var voteIndex;
+         voteIndex = $("#cv").val();
+         web3.eth.getAccounts().then(function(accounts){
+           var acc=accounts[0];
+           return contract.methods.vote(voteIndex).send({from:acc});
+         }).then(function(tx){
+           console.log(tx);
+         });
+       });
+
+       $("#set_address").click(function(){
+         var authorized;
+        authorized = $("#aa").val();
+        web3.eth.getAccounts().then(function(accounts){
+          var acc=accounts[0];
+          return contract.methods.authorize(authorized).send({from:acc});
+        }).then(function(tx){
+          console.log(tx);
+        });
+      });
+        //clicking to retrive values
+        $("#show_votes").click(function(){
+          console.log("button clicked");
+          contract.methods.TotalVotes().call().then(function(ans){
+              $("#show_votes_ans").html(ans);
+          });
+        });
+        $("#show_candidate").click(function(){
+          contract.methods.addCandidate().call().then(function(ans){
+            $("#show_candidate_ans").html(ans);
+          });
+        });
+        $("#show_owner").click(function(){
+            console.log("Button Clicked");
+
+          contract.methods.getOwner().call().then(function(ans){
+          $("#show_owner_ans").html(ans);
+          console.log(ans)
+        });
+      });
+      </script>
+    </body>
+    </html>
