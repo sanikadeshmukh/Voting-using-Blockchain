@@ -1,0 +1,74 @@
+pragma solidity ^0.5.1; 
+contract Election{ 
+     
+    struct Candidate{ 
+        string name; 
+        uint voteCount; 
+        
+    } 
+    struct Voter{ 
+        bool authorized; 
+        bool voted; 
+        uint vote; 
+    } 
+    address private owner; //access to owner 
+     
+    string private electionName; //public string fro name of election(lok sabha) 
+     
+    mapping(address => Voter) public voters; //maps to the voter struct 
+    Candidate[] public candidates;  //array for the candidate struct 
+    uint private totalVotes; //count of votes  
+     
+    modifier ownerOnly() { 
+ 
+ 
+ 
+        require(msg.sender==owner); 
+        _; //cert pre condiTion check , represents remaining body of addCandidate 
+function 
+    } 
+      
+    constructor(string memory _name) public{ 
+        owner = msg.sender; //msg is obj by solidity 
+        electionName=_name; 
+         
+    } 
+    function addCandidate(string memory _name) ownerOnly public  
+    { 
+         
+        candidates.push(Candidate(_name,0)); //to add Candidate 
+      
+     } 
+      
+      
+     function getNumCandidate() public view returns(uint) 
+     { 
+         return candidates.length; 
+     }   
+      
+     function getOwner() public view returns(address) 
+    { 
+ 
+ 
+ 
+        return owner; 
+    } 
+    function TotalVotes() public view returns(uint) 
+    { 
+        return totalVotes; 
+    } 
+     
+     
+    function authorize(address _person)  public{ //authorize the person 
+        voters[_person].authorized = true; 
+    } 
+ 
+    function vote(uint _voteIndex) public  { //_voteIndex retrives the voter 
+        require(!voters[msg.sender].voted); //false 
+        require(voters[msg.sender].authorized); //authorized is true 
+        voters[msg.sender].vote = _voteIndex;  //track if voted or not 
+        voters[msg.sender].voted  = true;  
+        candidates[_voteIndex].voteCount +=1;  //increment the vote count  
+        totalVotes +=1; 
+   } 
+ } 
